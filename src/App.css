@@ -1,5 +1,4 @@
 .login-panel--div {
-  
   width: 30%;
   display: flex;
   gap: 5rem;
@@ -10,7 +9,7 @@
   padding: 10px 0;
   margin: 10px 0;
   position: absolute;
-  right: 50px;
+  right: 5px;
 }
 
 .display-name {
@@ -64,8 +63,7 @@
 .blog-input--div {
   position: absolute;
   top: 20%;
-  left: 50%;
-  transform: translate(-50% -50%);
+  right: 5px;
   border-radius: 10px;
   padding: 20px;
   opacity: 0.96;
@@ -111,7 +109,21 @@
 
 @media screen and (max-width: 650px) {
   .login-panel--div {
-    width: 100%;
+    width: 80%;
     justify-content: space-around;
+  }
+
+  .blog-input--div {
+    left: 0;
+    width: 90%;
+  }
+
+  .blog-input--topic { 
+    font-size: 15px;
+    width: 95%;
+  }
+
+  .blog-input--textarea {
+    width: 95%;
   }
 }
