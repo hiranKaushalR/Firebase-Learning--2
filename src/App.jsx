@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Login from "./Components/Login";
 import Blogs from "./Components/Blogs";
 import BlogInput from "./Components/BlogInput";
-import { auth, googleAuth } from "./Config/Firebase";
-import { doc, setDoc, collection, deleteDoc } from "firebase/firestore";
+import { doc, setDoc, collection, deleteDoc, onSnapshot } from "firebase/firestore";
 import { db } from "./Config/Firebase";
 import "./App.css";
 import "animate.css";
@@ -12,6 +11,7 @@ function App(props) {
   const [showLoginPanel, setShowLoginPanel] = useState(false);
   const [togglePost, setTogglePost] = useState(true);
   const [user, setUser] = useState(null);
+  const [blogList, setBlogList] = useState([]);
 
   // For Article Input Field
   const [blogTopic, setBlogTopic] = useState("");
@@ -27,8 +27,21 @@ function App(props) {
   const date = calender.getDate();
 
   let day = `${year}/${month}/${date}`;
-
   //
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(blogStoreRef, (snapshot) => {
+      const blogsData = snapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      setBlogList(blogsData);
+    });
+
+    // Cleanup function to unsubscribe when component unmounts
+    return () => unsubscribe();
+  }, []);
+
 
   function toggleLoginPanel() {
     setShowLoginPanel(!showLoginPanel);
@@ -43,6 +56,7 @@ function App(props) {
   async function publishBlog() {
     try {
       const newBlogRef = doc(blogStoreRef);
+      setTogglePost(true);
 
       await setDoc(newBlogRef, {
         Uploader: user.displayName,
@@ -55,24 +69,34 @@ function App(props) {
     }
   }
 
-  async function deleteBlog () {
+  async function deleteBlog(id) {
     try {
-      await deleteDoc (doc (db, 'Blogs', id))
+      const deleteBlog = blogList.find(blog => blog.id === id);
+      if (user !== null && deleteBlog.Uploader === user.displayName) {
+        await deleteDoc(doc(db, "Blogs", id));
+      } else {
+        alert ("You do not have permission to delete this blog.");
+      }
     } catch (err) {
-      console.error (err)
+      console.error(err);
     }
   }
+  
 
-  console.log(new Date().getDate());
-  console.log(new Date().getFullYear());
+
 
   return (
     <div>
       <div style={{ position: "fixed", width: "100%", textAlign: "right" }}>
-
-        {user !== null ? <button className="post-btn" onClick={postBlog}>
-          {togglePost ? "Post" : "Cancel"}
-        </button> : <button className="post-btn" disabled>Post</button>}
+        {user !== null ? (
+          <button className="post-btn" onClick={postBlog}>
+            {togglePost ? "Post" : "Cancel"}
+          </button>
+        ) : (
+          <button className="post-btn" disabled>
+            Post
+          </button>
+        )}
         <button onClick={toggleLoginPanel} className="login-btn">
           {user === null ? "Log In" : "Account"}
         </button>
@@ -97,7 +121,7 @@ function App(props) {
         />
       )}
       <div>
-        <Blogs deleteBlog={deleteBlog}/>
+        <Blogs deleteBlog={deleteBlog} blogList={blogList}/>
       </div>
     </div>
   );

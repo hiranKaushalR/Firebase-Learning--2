@@ -38,7 +38,7 @@ function Login(props) {
       console.error(err);
     }
   }
-
+  
   return (
     <div className="login-panel--div animate__animated animate__zoomIn">
       {props.user ? (

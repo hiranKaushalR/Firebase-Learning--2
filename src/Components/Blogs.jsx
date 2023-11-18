@@ -1,37 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { db } from "../Config/Firebase";
-import { collection, onSnapshot } from "firebase/firestore";
+import React from "react";
 
 function Blogs (props) {
-  const [blogList, setBlogList] = useState([]);
-
-  const blogStoreRef = collection(db, "Blogs");
-
-  useEffect(() => {
-    const unsubscribe = onSnapshot(blogStoreRef, (snapshot) => {
-      const blogsData = snapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      setBlogList(blogsData);
-    });
-
-    // Cleanup function to unsubscribe when component unmounts
-    return () => unsubscribe();
-  }, []);
 
   return (
     <div>
       <div>
-        {blogList.length > 0 ? (
-          blogList.map((blog) => (
+        {props.blogList.length > 0 ? (
+          props.blogList.map((blog) => (
             <div key={blog.id}>
               <h3>{blog.topic}</h3>
               <p>{blog.article}</p>
               <p>
                 Uploaded by <b>{blog.Uploader}</b> on <b>{blog.Date}</b>
               </p>
-              <button onClick={props.deleteBlog}>Delete</button>
+              <button onClick={() => props.deleteBlog (blog.id)}>Delete</button>
               <hr />
             </div>
           ))
