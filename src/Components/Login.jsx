@@ -40,7 +40,7 @@ function Login(props) {
   }
   
   return (
-    <div className="login-panel--div animate__animated animate__zoomIn">
+    <div className="login-panel--div animate__animated animate__backInRight animate__faster">
       {props.user ? (
         <div>
           <img

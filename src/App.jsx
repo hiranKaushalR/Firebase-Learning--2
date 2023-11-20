@@ -1,9 +1,20 @@
 import { useState, useEffect } from "react";
 import Login from "./Components/Login";
-import Blogs from "./Components/Blogs";
-import BlogInput from "./Components/BlogInput";
-import { doc, setDoc, collection, deleteDoc, onSnapshot } from "firebase/firestore";
-import { db } from "./Config/Firebase";
+import Blogs from "./Pages/BlogCard";
+import BlogInput from "./Pages/BlogInput";
+import Head from "./Components/Head";
+import Article from "./Pages/Article";
+import NoPage from "./Pages/NoPage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import {
+  doc,
+  setDoc,
+  collection,
+  deleteDoc,
+  onSnapshot,
+} from "firebase/firestore";
+import { db, googleStorage } from "./Config/Firebase";
+import { Routes, Route, Link } from "react-router-dom";
 import "./App.css";
 import "animate.css";
 
@@ -16,6 +27,8 @@ function App(props) {
   // For Article Input Field
   const [blogTopic, setBlogTopic] = useState("");
   const [blogBody, setBlogBody] = useState("");
+  const [blogSummary, setBlogSummary] = useState("");
+  const [fileUpload, setFileUpload] = useState(null);
 
   const blogStoreRef = collection(db, "Blogs");
 
@@ -42,7 +55,6 @@ function App(props) {
     return () => unsubscribe();
   }, []);
 
-
   function toggleLoginPanel() {
     setShowLoginPanel(!showLoginPanel);
     setTogglePost(true);
@@ -51,18 +63,29 @@ function App(props) {
   function postBlog() {
     setTogglePost(!togglePost);
     setShowLoginPanel(false);
+    console.log (togglePost)
   }
 
   async function publishBlog() {
+    if (!fileUpload) return;
+    const fileFolderRef = ref(googleStorage, `Thumbnails/${fileUpload.name}`);
+
     try {
       const newBlogRef = doc(blogStoreRef);
+      await uploadBytes(fileFolderRef, fileUpload);
+      const url = await getDownloadURL(fileFolderRef);
       setTogglePost(true);
+      setBlogTopic("");
+      setBlogBody("");
+      setBlogSummary("");
 
       await setDoc(newBlogRef, {
         Uploader: user.displayName,
         Date: day,
         topic: blogTopic,
         article: blogBody,
+        summary: blogSummary,
+        thumbnail: url,
       });
     } catch (err) {
       console.error(err);
@@ -71,35 +94,28 @@ function App(props) {
 
   async function deleteBlog(id) {
     try {
-      const deleteBlog = blogList.find(blog => blog.id === id);
+      const deleteBlog = blogList.find((blog) => blog.id === id);
       if (user !== null && deleteBlog.Uploader === user.displayName) {
         await deleteDoc(doc(db, "Blogs", id));
       } else {
-        alert ("You do not have permission to delete this blog.");
+        alert("You do not have permission to delete this blog.");
       }
     } catch (err) {
       console.error(err);
     }
   }
-  
-
-
 
   return (
     <div>
       <div style={{ position: "fixed", width: "100%", textAlign: "right" }}>
-        {user !== null ? (
-          <button className="post-btn" onClick={postBlog}>
-            {togglePost ? "Post" : "Cancel"}
-          </button>
-        ) : (
-          <button className="post-btn" disabled>
-            Post
-          </button>
-        )}
-        <button onClick={toggleLoginPanel} className="login-btn">
-          {user === null ? "Log In" : "Account"}
-        </button>
+        
+        <Head
+          user={user}
+          postBlog={postBlog}
+          togglePost={togglePost}
+          toggleLoginPanel={toggleLoginPanel}
+        />
+
         {showLoginPanel ? (
           <Login
             user={user}
@@ -110,18 +126,32 @@ function App(props) {
           " "
         )}
       </div>
+
       <div style={{ height: "50px" }}></div>
       {togglePost ? (
         ""
-      ) : (
-        <BlogInput
-          setBlogBody={setBlogBody}
-          setBlogTopic={setBlogTopic}
-          publishBlog={publishBlog}
-        />
-      )}
+      ) : ''}
       <div>
-        <Blogs deleteBlog={deleteBlog} blogList={blogList}/>
+        <Routes>
+          <Route
+            path="/write-the-article"
+            element={
+              <BlogInput
+                setBlogBody={setBlogBody}
+                setBlogTopic={setBlogTopic}
+                setBlogSummary={setBlogSummary}
+                publishBlog={publishBlog}
+                setFileUpload={setFileUpload}
+              />
+            }
+          />
+          <Route
+            index
+            element={<Blogs deleteBlog={deleteBlog} blogList={blogList} />}
+          />
+          <Route path="/article/:id" element={<Article />} />
+          <Route path="*" element={<NoPage />} />
+        </Routes>
       </div>
     </div>
   );
