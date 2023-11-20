@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from 'react-router-dom'
 
 function BlogInput(props) {
   return (
@@ -19,17 +20,10 @@ function BlogInput(props) {
           placeholder="Write your article here"
           onChange={(event) => props.setBlogBody(event.target.value)}
         ></textarea>
-        <textarea
-          placeholder="Summery (Should contain 100-250 characters)"
-          minLength={100}
-          maxLength={350}
-          className="blog-input--textarea"
-          onChange={(event) => props.setBlogSummary(event.target.value)}
-          cols="70"
-          rows="5"
-        ></textarea>
+      
         <label htmlFor="thumbnail">Thumbnail</label>
         <input type="file" id="thumbnail" onChange={(event) => props.setFileUpload (event.target.files[0])} />
+        <Link to='..'>
         <button
           type="button"
           className="publish-btn"
@@ -37,6 +31,7 @@ function BlogInput(props) {
         >
           Publish
         </button>
+        </Link>
       </form>
     </div>
   );

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Login from "./Components/Login";
-import Blogs from "./Pages/BlogCard";
+import BlogCard from "./Pages/BlogCard";
 import BlogInput from "./Pages/BlogInput";
 import Head from "./Components/Head";
 import Article from "./Pages/Article";
@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import { db, googleStorage } from "./Config/Firebase";
 import { Routes, Route, Link } from "react-router-dom";
+import { useCollectionData } from "react-firebase-hooks/firestore";
 import "./App.css";
 import "animate.css";
 
@@ -63,21 +64,35 @@ function App(props) {
   function postBlog() {
     setTogglePost(!togglePost);
     setShowLoginPanel(false);
-    console.log (togglePost)
+    console.log(togglePost);
   }
+
+  function getTheSummary(blogBody) {
+    const words = blogBody.split(' ');
+    const summary = words.slice(0, 50).join(' ');
+    return summary; // Return the summary instead of using setBlogSummary
+  }
+
+
 
   async function publishBlog() {
     if (!fileUpload) return;
     const fileFolderRef = ref(googleStorage, `Thumbnails/${fileUpload.name}`);
+  
 
     try {
       const newBlogRef = doc(blogStoreRef);
       await uploadBytes(fileFolderRef, fileUpload);
       const url = await getDownloadURL(fileFolderRef);
+      
+      const summary = getTheSummary(blogBody)
+      
       setTogglePost(true);
       setBlogTopic("");
       setBlogBody("");
-      setBlogSummary("");
+      setBlogSummary(summary)
+      // setFileUpload ([])
+      
 
       await setDoc(newBlogRef, {
         Uploader: user.displayName,
@@ -108,7 +123,6 @@ function App(props) {
   return (
     <div>
       <div style={{ position: "fixed", width: "100%", textAlign: "right" }}>
-        
         <Head
           user={user}
           postBlog={postBlog}
@@ -128,9 +142,7 @@ function App(props) {
       </div>
 
       <div style={{ height: "50px" }}></div>
-      {togglePost ? (
-        ""
-      ) : ''}
+      {togglePost ? "" : ""}
       <div>
         <Routes>
           <Route
@@ -147,9 +159,10 @@ function App(props) {
           />
           <Route
             index
-            element={<Blogs deleteBlog={deleteBlog} blogList={blogList} />}
+            element={<BlogCard deleteBlog={deleteBlog} blogList={blogList} />}
           />
           <Route path="/article/:id" element={<Article />} />
+          {/* <Route path="chat" element={<ChatApp user={user} />} /> */}
           <Route path="*" element={<NoPage />} />
         </Routes>
       </div>
