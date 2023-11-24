@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../Config/Firebase";
 
-function Article() {
-  const { id } = useParams(); // Access the blog ID from the URL parameter
+function Article(props) {
+  const { id } = useParams();
   const [articleData, setArticleData] = useState(null);
 
   useEffect(() => {
-    // Function to fetch the specific article content based on the ID
     const fetchArticle = async () => {
       try {
         const blogRef = doc(db, "Blogs", id);
         const docSnapshot = await getDoc(blogRef);
 
         if (docSnapshot.exists()) {
-          // Set the article data if the document exists
           setArticleData(docSnapshot.data());
         } else {
           console.log("Document not found");
@@ -25,8 +23,11 @@ function Article() {
       }
     };
 
-    fetchArticle(); // Fetch article data when the component mounts
-  }, [id]); // Re-fetch article data whenever the ID changes
+    fetchArticle();
+  }, [id]);
+
+  console.log(articleData);
+  console.log(id);
 
   return (
     <div>
@@ -34,7 +35,22 @@ function Article() {
         <div className="article--div">
           <h2 className="article--header">{articleData.topic}</h2>
           <p className="article--para">{articleData.article}</p>
-          {/* Add other fields of the article as needed */}
+          <p>{articleData.Uploader}</p>
+          <p>{articleData.Date}</p>
+          {props.user !== null &&
+          articleData.Uploader === props.user.displayName ? (
+            <Link to='..'>
+            <button
+              onClick={() => props.deleteBlog(id)}
+              className="delete-article--btn"
+            >
+              Delete Article
+            </button>
+            </Link>
+          ) : (
+            <button className="delete-article-disabled-btn" onClick={() => props.deleteBlog (id)}>Delete Article</button>
+          )}
+
         </div>
       ) : (
         <p>Loading article...</p>
