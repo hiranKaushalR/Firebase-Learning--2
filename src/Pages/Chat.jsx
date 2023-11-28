@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
-import ChatBody from "../Components/ChatBOdy";
+import ChatBody from "../Components/ChatBody";
 import ChatHead from "../Components/ChatHead";
 import ChatSender from "../Components/ChatSender";
 import { db } from "../Config/Firebase";
