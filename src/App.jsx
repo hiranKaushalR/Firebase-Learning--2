@@ -4,6 +4,7 @@ import BlogCard from "./Pages/BlogCard";
 import BlogInput from "./Pages/BlogInput";
 import Head from "./Components/Head";
 import Article from "./Pages/Article";
+import Chat from "./Pages/Chat";
 import NoPage from "./Pages/NoPage";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import {
@@ -27,12 +28,13 @@ function App(props) {
 
   // For Article Input Field
   const [blogTopic, setBlogTopic] = useState("");
-  const [blogTag, setBlogTag] = useState ('')
+  const [blogTag, setBlogTag] = useState("");
   const [blogBody, setBlogBody] = useState("");
   const [blogSummary, setBlogSummary] = useState("");
   const [fileUpload, setFileUpload] = useState(null);
 
   const blogStoreRef = collection(db, "Blogs");
+  
 
   // Get Date
   const calender = new Date();
@@ -66,7 +68,6 @@ function App(props) {
     setShowLoginPanel(false);
   }
 
- 
   useEffect(() => {
     const words = blogBody.split(" ");
     const summary = words.slice(0, 30).join(" ");
@@ -92,12 +93,13 @@ function App(props) {
         article: blogBody,
         summary: blogSummary,
         thumbnail: url,
-        tag: blogTag
+        tag: blogTag,
       });
     } catch (err) {
       console.error(err);
     }
   }
+
 
   async function deleteBlog(id) {
     try {
@@ -114,15 +116,13 @@ function App(props) {
 
   return (
     <div>
-      <div style={{width: "100%", textAlign: "right" }}>
+      <div style={{ width: "100%", textAlign: "right" }}>
         <Head
           user={user}
           postBlog={postBlog}
           togglePost={togglePost}
           toggleLoginPanel={toggleLoginPanel}
         />
-
-       
       </div>
 
       <div style={{ height: "50px" }}></div>
@@ -161,19 +161,19 @@ function App(props) {
               />
             }
           />
-          {/* <Route path="chat" element={<ChatApp user={user} />} /> */}
+          <Route path="/chat" element={<Chat user={user} />} />
           <Route path="*" element={<NoPage />} />
         </Routes>
       </div>
       {showLoginPanel ? (
-          <Login
-            user={user}
-            setUser={setUser}
-            setShowLoginPanel={setShowLoginPanel}
-          />
-        ) : (
-          " "
-        )}
+        <Login
+          user={user}
+          setUser={setUser}
+          setShowLoginPanel={setShowLoginPanel}
+        />
+      ) : (
+        " "
+      )}
     </div>
   );
 }

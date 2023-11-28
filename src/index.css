@@ -1,0 +1,19 @@
+
+  
+  body {
+    -ms-overflow-style: none;
+  }
+
+  &::-webkit-scrollbar {
+    width: 10px; 
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #D3D3D3; /* Track color */
+    border-radius: 20px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #373737; /* Thumb color */
+    border-radius: 20px;
+  }

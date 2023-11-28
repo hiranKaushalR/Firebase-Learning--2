@@ -1,0 +1,179 @@
+@mixin mobile-mn {
+  @media screen and (max-width: 350px) {
+    @content;
+  }
+}
+
+@mixin mobile-md {
+  @media screen and (max-width: 450px) {
+    @content;
+  }
+}
+
+@mixin mobile-mx {
+  @media screen and (max-width: 550px) {
+    @content;
+  }
+}
+
+@mixin laptop {
+  @media screen and (max-width: 1200px) {
+    @content;
+  }
+}
+
+.chat-container {
+  margin: auto;
+  height: 70vh;
+  width: 500px;
+  border: solid 1px red;
+
+  @include mobile-mx {
+    width: 90%;
+  }
+
+  .chat-wrapper {
+    .chat-sender-container {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+
+      input {
+        width: 80%;
+      }
+
+      button {
+        width: 15%;
+      }
+    }
+
+    .chat-body-container {
+      height: 65vh;
+      border-radius: 10px;
+      overflow-y: scroll;
+      display: flex;
+      flex-direction: column;
+      -ms-overflow-style: none;
+
+      &::-webkit-scrollbar {
+        width: 5px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: #D3D3D3; /* Track color */
+        border-radius: 20px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #373737; /* Thumb color */
+        border-radius: 20px;
+      }
+
+      .chat-body-my-messages {
+        color: white;
+        background-color: #025c4c;
+
+        border-radius: 15px 0 15px 15px;
+        text-align: left;
+        align-self: flex-end;
+
+        color: black;
+
+        p {
+          margin: 0;
+        }
+
+        .sender {
+          display: none;
+        }
+
+        div {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          button {
+            cursor: pointer;
+            outline: none;
+            border: none;
+
+            img {
+              width: 16px;
+              height: 16px;
+            }
+          }
+        }
+      }
+
+      .chat-body-other-messages {
+        background-color: #373737;
+        border-radius: 0 10px 10px 10px;
+        align-self: flex-start;
+
+        padding: 6px 8px;
+        cursor: default;
+
+        p {
+          margin: 0;
+          padding: 0;
+        }
+
+        .sender {
+          font-size: 10px;
+          font-style: italic;
+          text-transform: capitalize;
+        }
+
+        .time {
+          text-align: right;
+        }
+      }
+
+      .chat-body-my-messages,
+      .chat-body-other-messages {
+        color: #ffffff;
+        max-width: 350px;
+        min-width: 80px;
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        padding: 6px 8px;
+        margin: 5px 5px;
+        cursor: default;
+
+        @include mobile-mx {
+          max-width: 300px;
+        }
+
+        @include mobile-md {
+          max-width: 250px;
+        }
+
+        p {
+          margin: 0;
+          padding: 0;
+        }
+
+        .text {
+          font-size: 17px;
+
+          @include mobile-mx {
+            font-size: 16px;;
+          }
+        }
+
+        .time {
+          font-size: 10px;
+          font-style: italic;
+          text-transform: lowercase;
+
+          @include mobile-mx {
+            font-size: 9.4px;;
+          }
+        }
+      }
+    }
+  }
+}
+
+
