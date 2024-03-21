@@ -39,21 +39,20 @@ function Login(props) {
   }
 
   return (
-    <div className="login-panel--div animate__animated animate__backInRight animate__faster">
+    <div className="login-panel--div">
       {props.user ? (
         <div>
           <div className="profile-info">
             <img
-            referrerPolicy="no-referrer"
-            src={props.user.photoURL}
-            alt="Profile"
-            style={{ width: "50px", height: "50px", borderRadius: "50%"}}
-            className="profile-photo"
-          />
-          <p className="display-name">{props.user.displayName}</p>
-          
+              referrerPolicy="no-referrer"
+              src={props.user.photoURL}
+              alt="Profile"
+              style={{ width: "50px", height: "50px", borderRadius: "50%" }}
+              className="profile-photo"
+            />
+            <p className="display-name">{props.user.displayName}</p>
           </div>
-          
+
           <button className="login-panel--logout" onClick={logOut}>
             Log Out
           </button>

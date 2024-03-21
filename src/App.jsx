@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import Login from "./Components/Login";
 import BlogCard from "./Pages/BlogCard";
 import BlogInput from "./Pages/BlogInput";
-import Head from "./Components/Head";
+import HomeLayout from "./Layout/HomeLayout";
 import Article from "./Pages/Article";
-import Chat from "./Pages/Chat";
 import NoPage from "./Pages/NoPage";
+import Error from "./Components/Error";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import {
   doc,
@@ -15,12 +15,15 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { db, googleStorage } from "./Config/Firebase";
-import { Routes, Route } from "react-router-dom";
-import { useCollectionData } from "react-firebase-hooks/firestore";
+import {
+  Route,
+  RouterProvider,
+  createBrowserRouter,
+  createRoutesFromElements,
+} from "react-router-dom";
 import "./App.css";
-import "animate.css";
 
-function App(props) {
+function App() {
   const [showLoginPanel, setShowLoginPanel] = useState(false);
   const [togglePost, setTogglePost] = useState(true);
   const [user, setUser] = useState(null);
@@ -32,9 +35,9 @@ function App(props) {
   const [blogBody, setBlogBody] = useState("");
   const [blogSummary, setBlogSummary] = useState("");
   const [fileUpload, setFileUpload] = useState(null);
+  const [error, setError] = useState(null);
 
   const blogStoreRef = collection(db, "Blogs");
-  
 
   // Get Date
   const calender = new Date();
@@ -48,11 +51,16 @@ function App(props) {
 
   useEffect(() => {
     const unsubscribe = onSnapshot(blogStoreRef, (snapshot) => {
-      const blogsData = snapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      setBlogList(blogsData);
+      try {
+        const blogsData = snapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        setBlogList(blogsData);
+        setError(null); // Clear error if no error occurs
+      } catch (error) {
+        setError(error); // Set error state if an error occurs during data fetching
+      }
     });
 
     return () => unsubscribe();
@@ -100,7 +108,6 @@ function App(props) {
     }
   }
 
-
   async function deleteBlog(id) {
     try {
       const deleteBlog = blogList.find((blog) => blog.id === id);
@@ -114,68 +121,63 @@ function App(props) {
     }
   }
 
-  return (
-    <div>
-      <div style={{ width: "100%", textAlign: "right" }}>
-        <Head
-          user={user}
-          postBlog={postBlog}
-          togglePost={togglePost}
-          toggleLoginPanel={toggleLoginPanel}
+  const router = createBrowserRouter(
+    createRoutesFromElements(
+      <Route
+        element={
+          <HomeLayout
+            user={user}
+            postBlog={postBlog}
+            togglePost={togglePost}
+            toggleLoginPanel={toggleLoginPanel}
+          />
+        }
+      >
+        <Route
+          index
+          errorElement={<Error />}
+          element={<BlogCard deleteBlog={deleteBlog} blogList={blogList} />}
         />
-      </div>
-
-      <div style={{ height: "50px" }}></div>
-      {togglePost ? "" : ""}
-      <div>
-        <Routes>
-          <Route
-            path="/write-the-article"
-            element={
-              <BlogInput
-                setBlogBody={setBlogBody}
-                setBlogTopic={setBlogTopic}
-                setBlogSummary={setBlogSummary}
-                publishBlog={publishBlog}
-                setFileUpload={setFileUpload}
-                setBlogTag={setBlogTag}
-                blogBody={blogBody}
-                blogTopic={blogTopic}
-                blogTag={blogTag}
-                fileUpload={fileUpload}
-                user={user}
-              />
-            }
-          />
-          <Route
-            index
-            element={<BlogCard deleteBlog={deleteBlog} blogList={blogList} />}
-          />
-          <Route
-            path="/article/:id"
-            element={
-              <Article
-                deleteBlog={deleteBlog}
-                blogList={blogList}
-                user={user}
-              />
-            }
-          />
-          <Route path="/chat" element={<Chat user={user} />} />
-          <Route path="*" element={<NoPage />} />
-        </Routes>
-      </div>
-      {showLoginPanel ? (
-        <Login
-          user={user}
-          setUser={setUser}
-          setShowLoginPanel={setShowLoginPanel}
+        <Route
+          path="write-the-article"
+          element={
+            <BlogInput
+              setBlogBody={setBlogBody}
+              setBlogTopic={setBlogTopic}
+              setBlogSummary={setBlogSummary}
+              publishBlog={publishBlog}
+              setFileUpload={setFileUpload}
+              setBlogTag={setBlogTag}
+              blogBody={blogBody}
+              blogTopic={blogTopic}
+              blogTag={blogTag}
+              fileUpload={fileUpload}
+              user={user}
+            />
+          }
         />
-      ) : (
-        " "
-      )}
-    </div>
+        <Route
+          path="article/:id"
+          element={
+            <Article deleteBlog={deleteBlog} blogList={blogList} user={user} />
+          }
+        />
+        <Route
+          path="account"
+          element={
+            <Login
+              setUser={setUser}
+              showLoginPanel={showLoginPanel}
+              user={user}
+            />
+          }
+        />
+        <Route path="*" element={<NoPage />} />
+      </Route>
+    )
   );
+
+  return <RouterProvider router={router} />;
 }
 
 export default App;

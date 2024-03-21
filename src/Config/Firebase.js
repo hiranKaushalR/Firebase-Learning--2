@@ -1,10 +1,8 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from 'firebase/firestore';
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getStorage } from "firebase/storage"
-
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAC5l-6iQlW6we3sTkPE9XHaKBxQHWb7_c",
@@ -16,11 +14,18 @@ const firebaseConfig = {
   measurementId: "G-J064469JEB"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+let app, analytics, auth, googleAuth, db, googleStorage;
 
-export const auth = getAuth (app)
-export const googleAuth = new GoogleAuthProvider ();
-export const db = getFirestore (app)
-export const googleStorage = getStorage (app)
+try {
+  app = initializeApp(firebaseConfig);
+  analytics = getAnalytics(app);
+  auth = getAuth(app);
+  googleAuth = new GoogleAuthProvider();
+  db = getFirestore(app);
+  googleStorage = getStorage(app);
+} catch (error) {
+  console.error("Error initializing Firebase:", error);
+  throw error;
+}
+
+export { app, analytics, auth, googleAuth, db, googleStorage };

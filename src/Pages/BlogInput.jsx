@@ -25,30 +25,34 @@ function BlogInput(props) {
     } else {
       setCanSubmit(false);
     }
-  }, [props.fileUpload, props.blogTag, wordCountInBlogBody, wordCountInBlogTopic]);
-
-  console.log("can submit ", canSubmit);
+  }, [
+    props.fileUpload,
+    props.blogTag,
+    wordCountInBlogBody,
+    wordCountInBlogTopic,
+  ]);
 
   return (
-    <div className="blog-input--div">
-      <h3>Write Your Article</h3>
-      <form className="blog-input--form">
+    <div className="flex justify-center items-center flex-col">
+      <h3 className="text-3xl">Write Your Article</h3>
+      <form className="w-full flex justify-center items-center flex-col my-6">
         <input
           type="text"
           required="required"
           placeholder="Topic Of Article"
-          className="blog-input--topic"
+          className="border-black border-2 max-w-[550px] w-full px-2 py-2 rounded-lg"
           maxLength={100}
           onChange={(event) => props.setBlogTopic(event.target.value)}
         />{" "}
         <p
-          style={
-            wordCountInBlogTopic > 15 ? { color: "red" } : { color: "blue" }
-          }
+          className={`${
+            wordCountInBlogTopic > 15 ? "text-red-600" : "text-blue-700"
+          } font-[500] pb-5`}
         >{`${wordCountInBlogTopic}/15 Words`}</p>
         <select
           name="Choose a tag"
           onChange={(event) => props.setBlogTag(event.target.value)}
+          className="border-black border-2 px-2 py-1 rounded-md mb-6 w-full max-w-[500px]"
         >
           <option value="" disabled selected hidden>
             Select an Option
@@ -78,7 +82,7 @@ function BlogInput(props) {
           <option value="other">Other</option>
         </select>
         <textarea
-          className="blog-input--textarea"
+          className={`border-black border-2 p-2 rounded-lg`}
           cols="70"
           rows="10"
           placeholder="Write your article here (Should Contain more than 250 words)"
@@ -92,34 +96,41 @@ function BlogInput(props) {
           >{`${wordCountInBlogBody} words in this article`}</p>
         ) : (
           <p
-            style={
-              wordCountInBlogBody >= 250 ? { color: "blue" } : { color: "red" }
-            }
+            className={`${
+              wordCountInBlogBody >= 250 ? "text-blue-700" : "text-red-600"
+            } font-[500] pb-5`}
           >
             {`You need more ${
               250 - wordCountInBlogBody
             } words to Sumbit this post`}
           </p>
         )}
-        <label htmlFor="thumbnail">Thumbnail</label>
+        <label htmlFor="thumbnail" className="">Thumbnail</label>
         <input
           type="file"
           id="thumbnail"
           onChange={(event) => props.setFileUpload(event.target.files[0])}
+          className=""
         />
-        {!canSubmit ? <button type="button" disabled>Publish</button>:props.user ? (
+        <div className="my-5">
+        {!canSubmit ? (
+          <button type="button" className="bg-red-500 blur-[.6px] text-white px-8 py-2 text-lg font-semibold rounded-lg" disabled>
+            Please fill the forms correctly
+          </button>
+        ) : props.user ? (
           <Link to="..">
             <button
               type="button"
-              className="publish-btn"
+              className="bg-blue-500 text-white px-8 py-2 text-lg font-semibold rounded-lg"
               onClick={props.publishBlog}
             >
               Publish
             </button>
           </Link>
         ) : (
-          <button disabled>You need to Log in First</button>
+          <button disabled className="bg-red-500 blur-[.6px] text-white px-8 py-2 text-lg font-semibold rounded-lg">You need to Log in First</button>
         )}
+        </div>
       </form>
     </div>
   );
