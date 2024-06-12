@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { auth, googleAuth } from "../Config/Firebase";
 import { signInWithPopup, signOut } from "firebase/auth";
+import { google } from "../Assets";
 
 function Login(props) {
   useEffect(() => {
@@ -39,29 +40,28 @@ function Login(props) {
   }
 
   return (
-    <div className="login-panel--div">
+    <div className="login-panel--div h-[71.2vh] flex justify-center items-center">
       {props.user ? (
-        <div>
-          <div className="profile-info">
+        <div className="flex flex-col gap-6">
+          <div className="flex justify-center items-center gap-4">
             <img
               referrerPolicy="no-referrer"
               src={props.user.photoURL}
               alt="Profile"
-              style={{ width: "50px", height: "50px", borderRadius: "50%" }}
-              className="profile-photo"
+              className="w-[100px] rounded-full border-4 border-black"
             />
-            <p className="display-name">{props.user.displayName}</p>
+            <p className="display-name text-lg font-bold">Hello, {props.user.displayName}</p>
           </div>
 
-          <button className="login-panel--logout" onClick={logOut}>
+          <button className="bg-red-700 px-4 py-1 text-lg font-bold rounded-md text-white" onClick={logOut} mx-auto>
             Log Out
           </button>
         </div>
       ) : (
         <div>
-          <button className="login-panel--google" onClick={GoogleAuth}>
-            <img src="https://firebasestorage.googleapis.com/v0/b/fir-test-2-fda42.appspot.com/o/Source%20Files%2Fgoogle.png?alt=media&token=c2959971-9796-479c-8495-6d97876e68d4" />
-            <p>Sign up with Google</p>
+          <button className="login-panel--google flex justify-center items-center gap-6 shadow-md px-4 py-2 rounded-md hover:shadow-xl transition-all" onClick={GoogleAuth}>
+            <img src={google} className="w-10 " />
+            <p className="text-2xl font-bold ">Sign up with Google</p>
           </button>
         </div>
       )}

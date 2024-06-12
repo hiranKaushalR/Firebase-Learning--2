@@ -9,7 +9,7 @@ function Blogs(props) {
     return <h1>There was an error: {error.message}</h1>;
   }
   return (
-    <div className="flex justify-between items-center flex-wrap gap-5">
+    <div className="flex justify-around items-center flex-wrap gap-5">
       {props.blogList.length > 0 ? (
         props.blogList.map((blog) => (
           <Link to={`/article/${blog.id}`} className="blog-card-link">

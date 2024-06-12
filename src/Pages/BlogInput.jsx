@@ -34,7 +34,10 @@ function BlogInput(props) {
 
   return (
     <div className="flex justify-center items-center flex-col">
-      <h3 className="text-3xl">Write Your Article</h3>
+      <div className="font-black text-center">
+      <h1 className="text-3xl">This is your space !!!</h1>
+      <h1 className="text-lg">Share your thoughts <span className="italic">freely</span> 🕊️</h1>
+      </div>
       <form className="w-full flex justify-center items-center flex-col my-6">
         <input
           type="text"
@@ -98,6 +101,7 @@ function BlogInput(props) {
           <p
             className={`${
               wordCountInBlogBody >= 250 ? "text-blue-700" : "text-red-600"
+
             } font-[500] pb-5`}
           >
             {`You need more ${
